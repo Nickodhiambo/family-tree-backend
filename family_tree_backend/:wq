@@ -1,0 +1,32 @@
+from django.shortcuts import render, redirect
+from .models import Family_Member
+from .forms import MemberForm
+
+# Create your views here.
+
+def index(request):
+    """Site's index page"""
+    return render(request, 'trees/index.html')
+
+def create_member(request):
+    """Creates a new family member"""
+    if request.method == 'POST':
+        form = MemberForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('create_member')
+    else:
+        form = MemberForm()
+    context = {'form': form}
+    return render(request, 'trees/create_member.html', context)
+
+def search_member(request):
+    """Searches for a member"""
+    if request.method == 'GET':
+        query = request.GET.get('query', '')
+        if query:
+            results = Family_Member.objects.filter(first_name__icontains=query) | Family_Member.objects.filter(last_name__icontains=query)
+        else:
+            results = []
+    context = {'results': results}
+    return render(request, 'trees/search_member.html', context)

@@ -1,0 +1,11 @@
+{% for child in family_tree %}
+  <li> 
+    {{ child.person.first_name }} {{ child.person.last_name }}
+       {% if child.children.all %}
+         <ul>
+           {% include 'render_family_tree.html' with family_tree=child.children.all %}
+         </ul>
+       {% endif %}
+  </li>
+{% endfor %}
+
