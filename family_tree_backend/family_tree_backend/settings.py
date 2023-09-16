@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+import os
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-t5!8_qsokq7qff1azzb+flul#8c!lhf3dwha^v)zyul1d4*3ww'
+SECRET_KEY = os.environ.get('SECRET KEY', default='9nhdghhbhdbsjhnhwnmsnnsjd')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
@@ -41,11 +43,13 @@ INSTALLED_APPS = [
     'users',
     'trees',
     'rest_framework',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -73,15 +77,18 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'family_tree_backend.wsgi.application'
 
+CORS_ALLOW_ALL_ORIGINS = True
+
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config (
+        default='postgresql://postgres:postgres@localhost:5432/family_tree_backend',
+        conn_max_age=600,
+        conn_health_checks=True,
+        )
 }
 
 
