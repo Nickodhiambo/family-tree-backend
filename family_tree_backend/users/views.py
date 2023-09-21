@@ -2,6 +2,7 @@ from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.models import User, Group
 from rest_framework_jwt.settings import api_settings
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
@@ -37,3 +38,22 @@ class logout_view(APIView):
         user = request.user
         user.auth_token.delete()
         return Response(status=status.HTTP_205_RESET_CONTENT)
+
+def Custom_User(request):
+    """Creates an admin user"""
+    # Check if admin user already exists
+    admin_user, created = User.objects.get_or_create(username='admin1')
+
+    # If succesfully created, set additional attributes
+    if created:
+        admin_user.is_staff = True
+        admin_user.is_superuser = True
+
+        # Set the email address
+        admin_user.email = 'nodhiambo01@gmail.com'
+
+        admin_user.set_password('admin_password')
+        admin_user.save()
+
+        # Add user to admin group
+        admin_user.groups.add(admin_group)
