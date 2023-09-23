@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User, Group
+from django.contrib.auth.views import PasswordResetView
 from rest_framework_jwt.settings import api_settings
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
@@ -13,9 +14,9 @@ from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 class login_view(APIView):
     """Logs in a user"""
     def post(self, request):
-        username = request.data.get('username')
+        email = request.data.get('email')
         password = request.data.get('password')
-        user = authenticate(request, username=username, password=password)
+        user = authenticate(request, email=email, password=password)
 
         if user is not None:
             login(request, user)
@@ -39,21 +40,18 @@ class logout_view(APIView):
         user.auth_token.delete()
         return Response(status=status.HTTP_205_RESET_CONTENT)
 
-def Custom_User(request):
-    """Creates an admin user"""
-    # Check if admin user already exists
-    admin_user, created = User.objects.get_or_create(username='admin1')
+class CustomPasswordResetView(APIView):
+    """Allows a user to reset their password"""
+    def post(self, request):
+        # Extract the user's email from request data
+        email = request.data.get('email')
 
-    # If succesfully created, set additional attributes
-    if created:
-        admin_user.is_staff = True
-        admin_user.is_superuser = True
+        #Trigger password reset process
+        password_reset_view = PasswordResetView.as_view()
+        response = password_reset_view(request)
 
-        # Set the email address
-        admin_user.email = 'nodhiambo01@gmail.com'
-
-        admin_user.set_password('admin_password')
-        admin_user.save()
-
-        # Add user to admin group
-        admin_user.groups.add(admin_group)
+        #Check response status and return a message
+        if response.status_code == 200:
+            return response({'message': 'Password reset email sent'}, status=status.HTTP_200_OK)
+        else:
+            return response({'message': 'Password reset request failed'}, status=status.HTTP_400_BAD_REQUEST)
