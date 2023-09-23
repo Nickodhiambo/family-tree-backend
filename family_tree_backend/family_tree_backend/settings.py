@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
-import dj_database_url
+#import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,9 +25,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET KEY', default='9nhdghhbhdbsjhnhwnmsnnsjd')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = []
 
 # Application definition
 
@@ -83,20 +83,20 @@ CORS_ALLOW_ALL_ORIGINS = True
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-#DATABASES = {
-   # 'default': {
-      #  'ENGINE': 'django.db.backends.sqlite3',
-       # 'NAME': BASE_DIR / 'sqlite3'
-       # }
-#}
-
 DATABASES = {
-        'default': dj_database_url.config (
-            default='postgresql://postgres:postgres@localhost:5432/family_tree_backend',
-            conn_max_age=600,
-            conn_health_checks=True,
-            )
-        }
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'sqlite3'
+            }
+}
+
+#DATABASES = {
+        #'default': dj_database_url.config (
+            #default='postgresql://postgres:postgres@localhost:5432/family_tree_backend',
+            #conn_max_age=600,
+            #conn_health_checks=True,
+            #)
+        #}
 
 
 # Password validation
@@ -148,7 +148,13 @@ REST_FRAMEWORK = {
             ],
         }
 
-AUTHENTICATION_BACKENDS = [
-        'users.custom_auth_backend.EmailorUsername',
-        'django.contrib.auth.backends.ModelBackend' #Default
-        ]
+AUTH_USER_MODEL = 'users.CustomUser'
+
+# Password reset settings
+EMAIL_BACKEND = 'django.core.mails.backend.smtp.EmailBackend'
+EMAIL_HOST = 'smtp@gmail.com'
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD =''
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
