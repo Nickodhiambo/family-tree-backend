@@ -1,3 +1,4 @@
 myenv/
 __pycache__/
 *.sqlite3
+family_tree_backend/.env

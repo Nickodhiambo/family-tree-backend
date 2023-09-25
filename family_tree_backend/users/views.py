@@ -45,11 +45,9 @@ class CustomPasswordResetView(APIView):
     def post(self, request):
         # Extract the user's email from request data
         email = request.data.get('email')
-
         #Trigger password reset process
         password_reset_view = PasswordResetView.as_view()
         response = password_reset_view(request)
-
         #Check response status and return a message
         if response.status_code == 200:
             return response({'message': 'Password reset email sent'}, status=status.HTTP_200_OK)

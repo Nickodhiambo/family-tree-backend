@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
-#import dj_database_url
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -150,11 +150,17 @@ REST_FRAMEWORK = {
 
 AUTH_USER_MODEL = 'users.CustomUser'
 
+
+# Environment settings
+import environ
+env = environ.Env()
+environ.Env.read_env()
+
 # Password reset settings
-EMAIL_BACKEND = 'django.core.mails.backend.smtp.EmailBackend'
-EMAIL_HOST = 'smtp@gmail.com'
-EMAIL_HOST_USER = ''
-EMAIL_HOST_PASSWORD =''
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = env('HOST_USER')
+EMAIL_HOST_PASSWORD =env('HOST_PASSWORD')
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
