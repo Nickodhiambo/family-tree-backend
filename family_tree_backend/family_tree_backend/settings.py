@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET KEY', default='9nhdghhbhdbsjhnhwnmsnnsjd')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -90,13 +90,13 @@ DATABASES = {
             }
 }
 
-#DATABASES = {
-        #'default': dj_database_url.config (
-            #default='postgresql://postgres:postgres@localhost:5432/family_tree_backend',
-            #conn_max_age=600,
-            #conn_health_checks=True,
-            #)
-        #}
+"""DATABASES = {
+        'default': dj_database_url.config (
+            default='postgresql://postgres:postgres@localhost:5432/family_tree_backend',
+            conn_max_age=600,
+            conn_health_checks=True,
+            )
+        }"""
 
 
 # Password validation
