@@ -16,3 +16,13 @@ class Family_Member(models.Model):
     
     def __str__(self):
         return (f"{self.first_name} {self.last_name}")
+
+    def get_family_tree(self):
+        """Gets the parent tree of the current member"""
+        family_tree = [self]
+        parent = self.parent
+
+        while parent:
+            family_tree.insert(0, parent)
+            parent = parent.parent
+        return family_tree
