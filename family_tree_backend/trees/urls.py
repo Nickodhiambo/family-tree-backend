@@ -13,7 +13,7 @@ urlpatterns = [
         path('api/view-list/', views.FamilyMemberListView.as_view(), name='family-member-list'),
 
         #Retrieves a single member
-        path('api/view-single/<int:pk>/', views.FamilyMemberSingleView.as_view(), name='family-member-single'),
+        path('api/view-single/<int:pk>/', views.CustomFamilyMemberView.as_view(), name='family-member-single'),
 
         #Retrieve, update, delete a single member
         path('api/update-delete/<int:pk>/', views.FamilyMemberUpdateDeleteView.as_view(), name='family-member-update-delete')
