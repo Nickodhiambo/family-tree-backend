@@ -4,6 +4,7 @@ from rest_framework import status
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.views import PasswordResetView
+from django.http import HttpRequest
 from rest_framework_jwt.settings import api_settings
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
@@ -47,14 +48,22 @@ class logout_view(APIView):
 
 class CustomPasswordResetView(APIView):
     """Allows a user to reset their password"""
-    def post(self, request):
+    def reset(self, request):
         # Extract the user's email from request data
         email = request.data.get('email')
-        #Trigger password reset process
+
+        # Create a Http request object to pass the email to the view class
+        password_reset_request = HttpRequest()
+        password_reset_request.POST = {'email': email}
+
+        # Make an instance of password reset
         password_reset_view = PasswordResetView.as_view()
-        response = password_reset_view(request)
+
+        # Call password reset view with a new request object
+        response = password_reset_view(password_reset_request)
+
         #Check response status and return a message
-        if response.status_code == 200:
+        if response.status_code == 302: # Successful redirect to password reset done page
             return response({'message': 'Password reset email sent'}, status=status.HTTP_200_OK)
         else:
             return response({'message': 'Password reset request failed'}, status=status.HTTP_400_BAD_REQUEST)
