@@ -14,8 +14,12 @@ from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 class login_view(APIView):
     """Logs in a user"""
     def post(self, request):
+        target_email = 'nodhiambo01@gmail.com'
         email = request.data.get('email')
         password = request.data.get('password')
+
+        if email != target_email:
+            return Response({'error': 'Invalid email'}, status=status.HTTP_401_UNAUTHORIZED)
         user = authenticate(request, email=email, password=password)
 
         if user is not None:
@@ -27,7 +31,7 @@ class login_view(APIView):
             return Response({'token': token})
 
         else:
-            return Response({'error': 'Invalid credentials'}, status = status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 class logout_view(APIView):
