@@ -14,7 +14,7 @@ from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 class login_view(APIView):
     """Logs in a user"""
     def post(self, request):
-        target_email = 'nodhiambo01@gmail.com'
+        target_email = TARGET_EMAIL
         email = request.data.get('email')
         password = request.data.get('password')
 

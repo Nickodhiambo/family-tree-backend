@@ -164,3 +164,7 @@ EMAIL_HOST_PASSWORD =env('HOST_PASSWORD')
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
+
+# Set target email for login
+from decouple import config
+TARGET_EMAIL = config('TARGET_EMAIL')
