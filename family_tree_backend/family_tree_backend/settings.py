@@ -16,6 +16,7 @@ import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+# BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 # Quick-start development settings - unsuitable for production
@@ -87,6 +88,7 @@ DATABASES = {
         'default': {
            'ENGINE': 'django.db.backends.sqlite3',
             'NAME': BASE_DIR / 'sqlite3'
+            #'NAME': os.path.join(BASE_DIR, 'sqlite3')
             }
 }
 
@@ -165,6 +167,17 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 
+# Login email
+TARGET_EMAIL = env('TARGET_EMAIL')
+
+"""
 # Set target email for login
 from decouple import config
+
+# Load environmental variables from .env file
+env_path = os.path.join(BASE_DIR, 'family_tree_backend', '.env')
+config(env_path)
+
+# Access the target email variable
 TARGET_EMAIL = config('TARGET_EMAIL')
+"""

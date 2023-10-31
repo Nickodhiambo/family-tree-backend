@@ -8,13 +8,14 @@ from rest_framework_jwt.settings import api_settings
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
+import os
 
 # Create your views here.
 
 class login_view(APIView):
     """Logs in a user"""
     def post(self, request):
-        target_email = TARGET_EMAIL
+        target_email = os.environ.get('TARGET_EMAIL')
         email = request.data.get('email')
         password = request.data.get('password')
 
