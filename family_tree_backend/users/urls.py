@@ -12,5 +12,5 @@ urlpatterns = [
         path('api/logout/', views.logout_view.as_view(), name='logout'),
 
         # Password reset
-        path('password_reset/', views.CustomPasswordResetView.as_view(), name='password-reset')
+        # path('password_reset/', views.CustomPasswordResetView.as_view(), name='password-reset')
         ]

@@ -46,8 +46,9 @@ class logout_view(APIView):
         user.auth_token.delete()
         return Response(status=status.HTTP_205_RESET_CONTENT)
 
+"""
 class CustomPasswordResetView(APIView):
-    """Allows a user to reset their password"""
+    Allows a user to reset their password
     def post(self, request):
         # Extract the user's email from request data
         email = request.data.get('email')
@@ -69,3 +70,4 @@ class CustomPasswordResetView(APIView):
             return response({'message': 'Password reset email sent'}, status=status.HTTP_200_OK)
         else:
             return response({'message': 'Password reset request failed'}, status=status.HTTP_400_BAD_REQUEST)
+            """
