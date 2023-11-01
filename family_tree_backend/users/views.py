@@ -48,19 +48,21 @@ class logout_view(APIView):
 
 class CustomPasswordResetView(APIView):
     """Allows a user to reset their password"""
-    def reset(self, request):
+    def post(self, request):
         # Extract the user's email from request data
         email = request.data.get('email')
 
         # Create a Http request object to pass the email to the view class
-        password_reset_request = HttpRequest()
-        password_reset_request.POST = {'email': email}
+        #password_reset_request = HttpRequest()
+        #password_reset_request.POST = {'email': email}
+        request._request = request
+        request.POST = request.data
 
         # Make an instance of password reset
         password_reset_view = PasswordResetView.as_view()
 
         # Call password reset view with a new request object
-        response = password_reset_view(password_reset_request)
+        response = password_reset_view(request)
 
         #Check response status and return a message
         if response.status_code == 302: # Successful redirect to password reset done page
