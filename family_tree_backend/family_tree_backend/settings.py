@@ -28,6 +28,9 @@ SECRET_KEY = os.environ.get('SECRET KEY', default='9nhdghhbhdbsjhnhwnmsnnsjd')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
+# Login redirect
+LOGIN_REDIRECT_URL = 'users/api/login/'
+
 ALLOWED_HOSTS = ['*']
 
 # Application definition
@@ -151,7 +154,6 @@ REST_FRAMEWORK = {
         }
 
 AUTH_USER_MODEL = 'users.CustomUser'
-
 
 # Environment settings
 import environ
