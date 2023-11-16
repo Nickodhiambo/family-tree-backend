@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework import status
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.views import PasswordResetView
 from django.http import HttpRequest
@@ -23,6 +23,9 @@ class login_view(APIView):
         if email != target_email:
             return Response({'error': 'Invalid email'}, status=status.HTTP_401_UNAUTHORIZED)
         user = authenticate(request, email=email, password=password)
+
+        if request.user.is_authenticated:
+            logout(request)
 
         if user is not None:
             login(request, user)
