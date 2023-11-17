@@ -41,6 +41,9 @@ class login_view(APIView):
             #token = jwt_encode_handler(payload)
             return Response({'access_token': access_token, 'refresh_token': refresh_token})
 
+        elif user is not None and not user.is_active:
+            return Response({'error': 'User is not active'}, status=status.HTTP_401_UNAUTHORIZED)
+
         else:
             return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
