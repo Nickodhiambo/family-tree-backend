@@ -9,6 +9,7 @@ from rest_framework_jwt.settings import api_settings
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.views import TokenRefreshView
@@ -18,6 +19,9 @@ import os
 
 class login_view(APIView):
     """Logs in a user"""
+
+    authentication_classes = [JWTAuthentication]
+
     def post(self, request):
         target_email = os.environ.get('TARGET_EMAIL')
         email = request.data.get('email')
@@ -56,7 +60,7 @@ class TokenRefreshViewCustom(TokenRefreshView):
 
 class logout_view(APIView):
     """Processes logout request"""
-    authentication_classes = [JSONWebTokenAuthentication]
+    authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
     def post(self, request):
         #Invalidate the user's token
