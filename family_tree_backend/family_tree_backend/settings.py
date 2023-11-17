@@ -153,6 +153,12 @@ REST_FRAMEWORK = {
             ],
         }
 
+from datetime import timedelta
+
+JWT_AUTH = {
+        'JWT_EXPIRATION_DELTA': timedelta(seconds=3600),
+        }
+
 AUTH_USER_MODEL = 'users.CustomUser'
 
 # Environment settings

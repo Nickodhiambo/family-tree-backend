@@ -24,8 +24,6 @@ class login_view(APIView):
             return Response({'error': 'Invalid email'}, status=status.HTTP_401_UNAUTHORIZED)
         user = authenticate(request, email=email, password=password)
 
-        if request.user.is_authenticated:
-            logout(request)
 
         if user is not None:
             login(request, user)
