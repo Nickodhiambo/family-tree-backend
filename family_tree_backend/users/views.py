@@ -9,6 +9,8 @@ from rest_framework_jwt.settings import api_settings
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenObtainPairView
 import os
 
 # Create your views here.
@@ -27,11 +29,16 @@ class login_view(APIView):
 
         if user is not None:
             login(request, user)
-            jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
-            jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
-            payload = jwt_payload_handler(user)
-            token = jwt_encode_handler(payload)
-            return Response({'token': token})
+            # Generate Access Token and Refresh Token
+            refresh = RefreshToken.for_user(user)
+            access_token = str(refresh.access_token)
+            refresh_token = str(refresh)
+            
+            #jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
+            #jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
+            #payload = jwt_payload_handler(user)
+            #token = jwt_encode_handler(payload)
+            return Response({'access_token': access_token, 'refresh_token': refresh_token})
 
         else:
             return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
