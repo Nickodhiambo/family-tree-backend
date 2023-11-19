@@ -31,7 +31,7 @@ class login_view(APIView):
             return Response({'error': 'Invalid email'}, status=status.HTTP_401_UNAUTHORIZED)
 
         try:
-            user = authenticate(request)
+            user = authenticate(request, email=email, password=password)
         except TokenExpiredError:
             return Response({'error':'Token expired'}, status=status.HTTP_401_UNAUTHORIZED)
 
