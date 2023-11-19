@@ -161,10 +161,6 @@ SIMPLE_JWT = {
         'REFRESH_TOKEN_LIFETIME': timedelta(days=365),
         }
 
-AUTHENTICATION_BACKENDS = [
-        'django.contrib.auth.backends.ModelBackend',
-        ]
-
 AUTH_USER_MODEL = 'users.CustomUser'
 
 # Environment settings

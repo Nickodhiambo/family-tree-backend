@@ -29,7 +29,11 @@ class login_view(APIView):
 
         if email != target_email:
             return Response({'error': 'Invalid email'}, status=status.HTTP_401_UNAUTHORIZED)
-        user = authenticate(request, email=email, password=password)
+
+        try:
+            user = authenticate(request)
+        except TokenExpiredError:
+            return Response({'error':'Token expired'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
         if user is not None:
@@ -44,9 +48,6 @@ class login_view(APIView):
             #payload = jwt_payload_handler(user)
             #token = jwt_encode_handler(payload)
             return Response({'access_token': access_token, 'refresh_token': refresh_token})
-
-        elif user is not None and not user.is_active:
-            return Response({'error': 'User is not active'}, status=status.HTTP_401_UNAUTHORIZED)
 
         else:
             return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
