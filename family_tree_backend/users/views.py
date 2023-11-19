@@ -36,7 +36,7 @@ class login_view(APIView):
             return Response({'error':'Token expired'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
-        if user is not None:
+        while user is not None:
             login(request, user)
             # Generate Access Token and Refresh Token
             refresh = RefreshToken.for_user(user)
@@ -49,8 +49,8 @@ class login_view(APIView):
             #token = jwt_encode_handler(payload)
             return Response({'access_token': access_token, 'refresh_token': refresh_token})
 
-        else:
-            user = authenticate(request, email=email, password=password)
+        #else:
+            #user = authenticate(request, email=email, password=password)
             #return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
 class TokenRefreshViewCustom(TokenRefreshView):
