@@ -50,7 +50,8 @@ class login_view(APIView):
             return Response({'access_token': access_token, 'refresh_token': refresh_token})
 
         else:
-            return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+            user = authenticate(request, email=email, password=password)
+            #return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
 class TokenRefreshViewCustom(TokenRefreshView):
     """Generates a new access token"""
