@@ -32,7 +32,7 @@ class login_view(APIView):
 
         user = authenticate(request, email=email, password=password)
 
-        if user is not None:
+        if user:
             login(request, user)
             # Generate Access Token and Refresh Token
             refresh = RefreshToken.for_user(user)
