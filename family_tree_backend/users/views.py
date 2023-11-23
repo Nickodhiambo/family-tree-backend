@@ -32,13 +32,13 @@ class login_view(APIView):
 
         user = authenticate(request, email=email, password=password)
 
-        if user:
+        if user is not None:
             login(request, user)
             # Generate Access Token and Refresh Token
             refresh = RefreshToken.for_user(user)
             access_token = str(refresh.access_token)
             refresh_token = str(refresh)
-            
+
             #jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
             #jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
             #payload = jwt_payload_handler(user)
@@ -58,7 +58,7 @@ class TokenRefreshViewCustom(TokenRefreshView):
 class logout_view(APIView):
     """Processes logout request"""
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
     def post(self, request):
         #Invalidate the user's token
         user = request.user
