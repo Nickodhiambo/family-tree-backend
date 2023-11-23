@@ -62,7 +62,7 @@ class logout_view(APIView):
     def post(self, request):
         #Invalidate the user's token
         user = request.user
-        user.auth_token.delete()
+        #user.auth_token.delete()
         return Response(status=status.HTTP_205_RESET_CONTENT)
 
 """

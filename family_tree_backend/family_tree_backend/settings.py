@@ -26,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET KEY', default='9nhdghhbhdbsjhnhwnmsnnsjd')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 # Login redirect
 LOGIN_REDIRECT_URL = 'users/api/login/'
