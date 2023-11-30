@@ -7,6 +7,8 @@ djangorestframework==3.14.0
 djangorestframework-jwt==1.11.0
 djangorestframework-simplejwt==5.3.0
 gunicorn==21.2.0
+numpy==1.26.2
+opencv-python==4.8.1.78
 packaging==23.1
 psycopg2-binary==2.9.7
 pydocstyle==6.3.0

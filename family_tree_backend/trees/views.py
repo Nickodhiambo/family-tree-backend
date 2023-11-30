@@ -4,6 +4,8 @@ from rest_framework import generics
 from rest_framework.response import Response
 from .serializers import FamilyMemberSerializer
 from .permissions import IsAdminUser
+from django.template import loader
+import cv2
 
 # Create your views here.
 
@@ -33,10 +35,61 @@ class FamilyMemberParentsView(generics.RetrieveAPIView):
     queryset = Family_Member.objects.all()
     serializer_class = FamilyMemberSerializer
     #permission_classes = [IsAdminUser]
+    template_name = 'certificate_template.html'
 
     def retrieve(self, request, *args, **kwargs):
         """
-        Retrieves a member with parents and children"""
+        Retrieves a member with parents and children
+        """
+        instance = self.get_object()
+
+        if instance:
+            # Create a list to store parents to the member, including the member
+            parent_tree = instance.get_family_tree()
+
+            # Load certificate image from database
+            certificate_img_path = instance.certificate_image.path
+            certificate_img = cv2.imread(certificate_img_path)
+
+            ## Display the image and capture coordinates
+    
+            # Display loaded cert image
+            cv2.imshow('Certificate Image', certificate_img)
+    
+            # Detects user's mouse events
+            cv2.setMouseCallback('Certificate Image', self.get_coordinates_callback)
+    
+            # Waits indefinitely for user to press a key
+            cv2.waitKey(0)
+    
+            #Closes the cert image window
+            cv2.destroyAllWindows()
+
+            # Update the model with captured coordinates
+            instance.data_coordinates = self.coordinates
+            instance.save()
+
+            # Render the cert using a template
+            template = loader.get_template(self.template_name)
+            context = {
+                    'member': instance,
+                    'parent_tree': parent_tree,
+                    'image_url': instance.certificate_image.url if instance.certificate_image else None
+                    }
+            rendered_certificate = template.render(context)
+            return HttpResponse(rendered_certificate)
+
+        else:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+    def get_coordinates_callback(self):
+        """Captures coordinates from user input"""
+        if event == cv2.EVENT_LBUTTONDOWN:
+            self.coordinates = f'{x}, {y}'
+            print(f'Clicked at coordinates: {self.coordinates}')
+
+    """def retrieve(self, request, *args, **kwargs):
+        Retrieves a member with parents and children
         instance = self.get_object()
 
         if instance:
@@ -46,7 +99,7 @@ class FamilyMemberParentsView(generics.RetrieveAPIView):
                 "parent_tree": FamilyMemberSerializer(parent_tree, many=True).data
                 })
         else:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            return Response(status=status.HTTP_404_NOT_FOUND)"""
 
 class FamilyMemberChildrenView(generics.RetrieveAPIView):
     """Retrieves a member's children"""

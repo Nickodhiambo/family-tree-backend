@@ -13,9 +13,12 @@ class Family_Member(models.Model):
             blank = True,
             related_name = 'children'
         )
+
+    certificate_image = models.ImageField(upload_to='certificates/', blank=True, null=True)
+    data_coordinates = models.CharField(max_length=50, blank=True, null=True)
     
     def __str__(self):
-        return (f"{self.first_name} {self.last_name}")
+        return (f"{self.first_name}")
 
     def get_family_tree(self):
         """Gets the parent tree of the current member"""

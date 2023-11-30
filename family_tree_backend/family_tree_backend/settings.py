@@ -26,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET KEY', default='9nhdghhbhdbsjhnhwnmsnnsjd')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 # Login redirect
 LOGIN_REDIRECT_URL = 'users/api/login/'
@@ -179,6 +179,10 @@ EMAIL_USE_SSL = False
 
 # Login email
 TARGET_EMAIL = env('TARGET_EMAIL')
+
+# Define media root and url for uploaded cert images
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
 
 """
 # Set target email for login
