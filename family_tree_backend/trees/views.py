@@ -1,11 +1,13 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import Family_Member
 from rest_framework import generics
 from rest_framework.response import Response
 from .serializers import FamilyMemberSerializer
 from .permissions import IsAdminUser
-from django.template import loader
+from django.core.files.base import ContentFile
 import cv2
+import os
+from django.conf import settings
 
 # Create your views here.
 
@@ -35,61 +37,9 @@ class FamilyMemberParentsView(generics.RetrieveAPIView):
     queryset = Family_Member.objects.all()
     serializer_class = FamilyMemberSerializer
     #permission_classes = [IsAdminUser]
-    template_name = 'certificate_template.html'
 
     def retrieve(self, request, *args, **kwargs):
-        """
-        Retrieves a member with parents and children
-        """
-        instance = self.get_object()
-
-        if instance:
-            # Create a list to store parents to the member, including the member
-            parent_tree = instance.get_family_tree()
-
-            # Load certificate image from database
-            certificate_img_path = instance.certificate_image.path
-            certificate_img = cv2.imread(certificate_img_path)
-
-            ## Display the image and capture coordinates
-    
-            # Display loaded cert image
-            cv2.imshow('Certificate Image', certificate_img)
-    
-            # Detects user's mouse events
-            cv2.setMouseCallback('Certificate Image', self.get_coordinates_callback)
-    
-            # Waits indefinitely for user to press a key
-            cv2.waitKey(0)
-    
-            #Closes the cert image window
-            cv2.destroyAllWindows()
-
-            # Update the model with captured coordinates
-            instance.data_coordinates = self.coordinates
-            instance.save()
-
-            # Render the cert using a template
-            template = loader.get_template(self.template_name)
-            context = {
-                    'member': instance,
-                    'parent_tree': parent_tree,
-                    'image_url': instance.certificate_image.url if instance.certificate_image else None
-                    }
-            rendered_certificate = template.render(context)
-            return HttpResponse(rendered_certificate)
-
-        else:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
-    def get_coordinates_callback(self):
-        """Captures coordinates from user input"""
-        if event == cv2.EVENT_LBUTTONDOWN:
-            self.coordinates = f'{x}, {y}'
-            print(f'Clicked at coordinates: {self.coordinates}')
-
-    """def retrieve(self, request, *args, **kwargs):
-        Retrieves a member with parents and children
+        """Retrieves a member with parents and children"""
         instance = self.get_object()
 
         if instance:
@@ -99,7 +49,7 @@ class FamilyMemberParentsView(generics.RetrieveAPIView):
                 "parent_tree": FamilyMemberSerializer(parent_tree, many=True).data
                 })
         else:
-            return Response(status=status.HTTP_404_NOT_FOUND)"""
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
 class FamilyMemberChildrenView(generics.RetrieveAPIView):
     """Retrieves a member's children"""
@@ -129,3 +79,49 @@ class FamilyMemberUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Family_Member.objects.all()
     serializer_class = FamilyMemberSerializer
     #permission_classes = [IsAdminUser]
+
+# Load the template certificate image (save it in the static folder)
+template_image = cv2.imread(os.path.join(settings.MEDIA_ROOT, 'template.png'))
+
+# Function to update the image with text
+def update_certificate_template(template_image, user_name):
+    # Make a copy of the template to work on
+    template = template_image.copy()
+    coords = (x,y) # Replace with coordinate of where to update
+
+	# Define the font, color, and size for the text to be added
+    font = cv2.FONT_HERSHEY_SCRIPT_SIMPLEX
+    font_color = (0, 0, 0)  # Black color (BGR format)
+    font_scale = 1
+    thickness = 1
+    line_type = cv2.LINE_AA
+
+	# Put the user's name at the specified coordinates
+    cv2.putText(template, user_name, coords, font, font_scale, font_color, thickness, lineType=line_type)
+
+    return template
+
+# View for generating and updating certificates
+def generate_certificate(request):
+    if request.method == 'POST':
+        user_name = request.POST['user_name']
+
+        updated_template = update_certificate_template(template_image, user_name)
+
+        # Convert the updated image to a format suitable for saving
+        ret, buf = cv2.imencode('.png', updated_template)
+        image = ContentFile(buf.tobytes())
+
+        certificate = Family_Member(user_name=user_name)
+        certificate.certificate_image.save(f"{user_name}.png", image)
+        certificate.save()
+
+        return redirect('certificate_display', id=certificate.id)
+    else:
+        return render(request, 'trees/certificate-form.html')
+
+# View for displaying the updated certificate
+def certificate_display(request, id):
+    certificate = Family_Member.objects.get(id=id)
+    return render(request, 'trees/certificate-display.html', {'certificate': certificate})
+	

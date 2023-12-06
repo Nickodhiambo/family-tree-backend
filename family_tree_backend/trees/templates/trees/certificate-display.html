@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Certificate</title>
+</head>
+<body>
+    <h1>Certificate for {{ certificate.user_name }}</h1>
+    <img src="{{ certificate.certificate_image.url }}" alt="Certificate">
+    <br>
+    <a href="{{ certificate.certificate_image.url }}" download="{{ certificate.user_name }}_certificate.png">
+        Download Certificate
+    </a>
+</body>
+</html>

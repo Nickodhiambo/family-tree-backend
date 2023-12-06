@@ -4,7 +4,7 @@ from django.db import models
 
 class Family_Member(models.Model):
     """An Individual family member"""
-    first_name = models.CharField(max_length=100)
+    user_name = models.CharField(max_length=100)
     #last_name = models.CharField(max_length=100)
     parent = models.ForeignKey(
             'self',
@@ -15,7 +15,7 @@ class Family_Member(models.Model):
         )
 
     certificate_image = models.ImageField(upload_to='certificates/', blank=True, null=True)
-    data_coordinates = models.CharField(max_length=50, blank=True, null=True)
+    #data_coordinates = models.CharField(max_length=50, blank=True, null=True)
     
     def __str__(self):
         return (f"{self.first_name}")
