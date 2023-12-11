@@ -19,7 +19,7 @@ class FamilyMemberSerializer(serializers.ModelSerializer):
                 'id': member.id,
                 'user_name': member.user_name,
                 'certificate_image': member.certificate_image.url if member.certificate_image else None,
-                'parent': []  # Set an empty list for the parent to avoid recursion
+                #'parent': []  # Set an empty list for the parent to avoid recursion
             }
             serialized_family_tree.append(serialized_member)
 
