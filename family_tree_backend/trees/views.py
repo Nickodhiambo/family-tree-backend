@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from .models import Family_Member
 from rest_framework import generics
 from rest_framework.response import Response
-from .serializers import FamilyMemberSerializer
+from .serializers import FamilyMemberSerializer, ParentListSerializer
 from .permissions import IsAdminUser
 from django.core.files.base import ContentFile
 import cv2
@@ -79,6 +79,11 @@ class FamilyMemberUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Family_Member.objects.all()
     serializer_class = FamilyMemberSerializer
     #permission_classes = [IsAdminUser]
+
+class ParentListView(generics.ListAPIView):
+    """Retrieves a list of all parents"""
+    queryset = Family_Member.objects.all()
+    serializer_class = ParentListSerializer
 
 # Load the template certificate image (save it in the static folder)
 template_image = cv2.imread(os.path.join(settings.MEDIA_ROOT, 'template.png'))

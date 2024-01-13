@@ -24,3 +24,38 @@ class FamilyMemberSerializer(serializers.ModelSerializer):
             serialized_family_tree.append(serialized_member)
 
         return serialized_family_tree
+
+"""class ParentListSerializer(serializers.ModelSerializer):
+    Serializes the parent list API
+    parent = serializers.SerializerMethodField()
+    children = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Family_Member
+        fields = ['id', 'user_name', 'parent', 'children']
+        depth = 1
+
+    def get_parent(self, obj):
+        Serializes parent object
+        parent = obj.parent
+        return ParentListSerializer(parent).data if parent else None
+
+    def get_children(self, obj):
+        Serializes children objects
+        children = ParentListSerializer(obj.children.all(), many=True).data
+        return children if children else []"""
+
+class ImmediateChildrenSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Family_Member
+        fields = ['id', 'user_name']
+
+class ParentListSerializer(serializers.ModelSerializer):
+    """Serializes the parent list API"""
+    parent = ImmediateChildrenSerializer(read_only=True)
+    children = ImmediateChildrenSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Family_Member
+        fields = ['id', 'user_name', 'parent', 'children']
+

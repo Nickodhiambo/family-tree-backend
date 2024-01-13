@@ -21,8 +21,11 @@ urlpatterns = [
         #Retrieve, update, delete a single member
         path('api/update-delete/<int:pk>/', views.FamilyMemberUpdateDeleteView.as_view(), name='family-member-update-delete'),
 
+        # Retrieve a list of all parents
+        path('api/view-parents/', views.ParentListView.as_view(), name='parent-list-view'),
+
         # Generate certificate
-        path('generate/', views.generate_certificate, name='generate_certificate'),
+        #path('generate/', views.generate_certificate, name='generate_certificate'),
 
         # Display certificate
         path('display/<int:id>/', views.certificate_display, name='certificate_display'),
