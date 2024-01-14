@@ -23,15 +23,6 @@ class FamilyMemberListView(generics.ListAPIView):
     serializer_class = FamilyMemberSerializer
     #permission_classes = [IsAdminUser]
 
-    def list(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())
-        serializer = self.get_serializer(queryset, many=True)
-
-        # Customizing the response format
-        formatted_data = {"members": serializer.data}
-
-        return Response({"data": formatted_data})
-
 class FamilyMemberParentsView(generics.RetrieveAPIView):
     """Retrieves a member object with parents"""
     queryset = Family_Member.objects.all()
