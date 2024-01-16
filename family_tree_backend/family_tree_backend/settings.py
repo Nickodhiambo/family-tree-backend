@@ -83,6 +83,9 @@ WSGI_APPLICATION = 'family_tree_backend.wsgi.application'
 
 CORS_ALLOW_ALL_ORIGINS = True
 
+# Allow credentials (cookies, authorization headers) in CORS requests
+CORS_ALLOW_CREDENTIALS = True
+
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
