@@ -79,25 +79,28 @@ class ParentListView(generics.ListAPIView):
     serializer_class = ParentListSerializer
 
 class CreateFamilyMember(APIView):
-    """Creates a member together with a list of parents"""
     def post(self, request, format=None):
         serializer = NewSerializer(data=request.data)
 
         if serializer.is_valid():
-            user_name = serializer.validated_data['user_name']
-            parents_names = serializer.validated_data.get('parents', [])
+            # Extract parents from the data
+            parents_data = serializer.validated_data.pop('parents', [])
 
-            # Create the family member
-            family_member = Family_Member.objects.create(user_name=user_name)
+            # Create the first member
+            member = Family_Member.objects.create(user_name=serializer.validated_data['user_name'])
 
-            # Create parents and link them to the family member
-            for parent_name in parents_names:
+            # Create parent-child relationships
+            for parent_name in reversed(parents_data):
                 parent = Family_Member.objects.create(user_name=parent_name)
-                family_member.parent = parent
-                family_member.save()
+                parent.parent = member
+                parent.save()
+                member = parent  # Move to the next level in the hierarchy
 
-            return Response({'message': 'Family member created successfully.'}, status=status.HTTP_201_CREATED)
+            serializer_instance = NewSerializer(member)
+            return Response(serializer_instance.data, status=status.HTTP_201_CREATED)
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class SearchFamilyMember(APIView):
     """Searches for a member by name"""
