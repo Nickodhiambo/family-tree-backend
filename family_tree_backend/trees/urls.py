@@ -29,4 +29,10 @@ urlpatterns = [
 
         # Display certificate
         path('display/<int:id>/', views.certificate_display, name='certificate_display'),
+
+        # New create endpoint
+        path('api/create_family_member/', views.CreateFamilyMember.as_view(), name='create_family_member'),
+
+        # New search member endpoint
+        path('api/search_family_member/', views.SearchFamilyMember.as_view(), name='search_family_member'),
 ]

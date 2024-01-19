@@ -1,8 +1,10 @@
 from django.shortcuts import render, redirect
 from .models import Family_Member
 from rest_framework import generics
+from rest_framework.views import APIView
+from rest_framework import status
 from rest_framework.response import Response
-from .serializers import FamilyMemberSerializer, ParentListSerializer
+from .serializers import FamilyMemberSerializer, ParentListSerializer, NewSerializer
 from .permissions import IsAdminUser
 from django.core.files.base import ContentFile
 import cv2
@@ -75,6 +77,43 @@ class ParentListView(generics.ListAPIView):
     """Retrieves a list of all parents"""
     queryset = Family_Member.objects.all()
     serializer_class = ParentListSerializer
+
+class CreateFamilyMember(APIView):
+    """Creates a member together with a list of parents"""
+    def post(self, request, format=None):
+        serializer = NewSerializer(data=request.data)
+
+        if serializer.is_valid():
+            user_name = serializer.validated_data['user_name']
+            parents_names = serializer.validated_data.get('parents', [])
+
+            # Create the family member
+            family_member = Family_Member.objects.create(user_name=user_name)
+
+            # Create parents and link them to the family member
+            for parent_name in parents_names:
+                parent = Family_Member.objects.create(user_name=parent_name)
+                family_member.parent = parent
+                family_member.save()
+
+            return Response({'message': 'Family member created successfully.'}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class SearchFamilyMember(APIView):
+    """Searches for a member by name"""
+    def get(self, request, format=None):
+        member_id = request.query_params.get('member_id', None)
+
+        if member_id is not None:
+            try:
+                member = Family_Member.objects.get(id=member_id)
+                family_tree = member.get_family_tree()
+                serializer = NewSerializer(family_tree, many=True)
+                return Response(serializer.data)
+            except Family_Member.DoesNotExist:
+                return Response({'error': 'Family member not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response({'error': 'Member name is required.'}, status=status.HTTP_400_BAD_REQUEST)
 
 # Load the template certificate image (save it in the static folder)
 template_image = cv2.imread(os.path.join(settings.MEDIA_ROOT, 'template.png'))
