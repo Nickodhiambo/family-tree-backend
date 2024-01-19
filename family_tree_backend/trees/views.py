@@ -22,7 +22,7 @@ class FamilyMemberCreateView(generics.CreateAPIView):
 class FamilyMemberListView(generics.ListAPIView):
     """Retrieves a list of all family members"""
     queryset = Family_Member.objects.all()
-    serializer_class = FamilyMemberSerializer
+    serializer_class = NewSerializer
     #permission_classes = [IsAdminUser]
 
 class FamilyMemberParentsView(generics.RetrieveAPIView):
@@ -47,7 +47,7 @@ class FamilyMemberParentsView(generics.RetrieveAPIView):
 class FamilyMemberChildrenView(generics.RetrieveAPIView):
     """Retrieves a member's children"""
     queryset = Family_Member.objects.all()
-    serializer_class = FamilyMemberSerializer
+    serializer_class = NewSerializer
 
     def retrieve(self, request, *args, **kwargs):
         # Get a member object
@@ -86,19 +86,17 @@ class CreateFamilyMember(APIView):
             # Extract parents from the data
             parents_data = serializer.validated_data.pop('parents', [])
 
-            # Create the first member
-            member = Family_Member.objects.create(user_name=serializer.validated_data['user_name'])
+            # Create the member
+            member = serializer.save()
 
             # Create parent-child relationships
-            for parent_name in reversed(parents_data):
+            for parent_name in (parents_data):
                 parent = Family_Member.objects.create(user_name=parent_name)
-                parent.parent = member
-                parent.save()
+                member.parent = parent
+                member.save()
                 member = parent  # Move to the next level in the hierarchy
 
-            serializer_instance = NewSerializer(member)
-            return Response(serializer_instance.data, status=status.HTTP_201_CREATED)
-
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

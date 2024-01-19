@@ -26,6 +26,6 @@ class Family_Member(models.Model):
         parent = self.parent
 
         while parent:
-            family_tree.insert(0, parent)
+            family_tree.insert(0, parent) # Append instead of insert
             parent = parent.parent
         return family_tree
