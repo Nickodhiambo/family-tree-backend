@@ -22,7 +22,7 @@ class FamilyMemberCreateView(generics.CreateAPIView):
 class FamilyMemberListView(generics.ListAPIView):
     """Retrieves a list of all family members"""
     queryset = Family_Member.objects.all()
-    serializer_class = NewSerializer
+    serializer_class = FamilyMemberSerializer
     #permission_classes = [IsAdminUser]
 
 class FamilyMemberParentsView(generics.RetrieveAPIView):

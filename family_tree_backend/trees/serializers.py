@@ -7,7 +7,7 @@ class FamilyMemberSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Family_Member
-        fields = '__all__'
+        fields = ['id', 'user_name', 'parent']
 
     def get_parent(self, obj):
         family_tree = obj.get_family_tree()
@@ -18,7 +18,7 @@ class FamilyMemberSerializer(serializers.ModelSerializer):
             serialized_member = {
                 'id': member.id,
                 'user_name': member.user_name,
-                'certificate_image': member.certificate_image.url if member.certificate_image else None,
+                #'certificate_image': member.certificate_image.url if member.certificate_image else None,
                 #'parent': []  # Set an empty list for the parent to avoid recursion
             }
             serialized_family_tree.append(serialized_member)
@@ -63,7 +63,7 @@ class NewSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Family_Member
-        fields = ['id', 'user_name', 'certificate_image', 'parents']
+        fields = ['id', 'user_name', 'parents']
 
     def to_internal_value(self, data):
         # Convert the comma-separated string of parents into a list
