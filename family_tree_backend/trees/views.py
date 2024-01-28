@@ -15,6 +15,7 @@ class CreateMemberView(generics.CreateAPIView):
         to a member instance
         """
         parent_id = self.request.data.get('parent')
+        child_ids = self.request.data.get('children')
 
         # Create the member
         instance = serializer.save()
@@ -26,10 +27,9 @@ class CreateMemberView(generics.CreateAPIView):
             instance.save()
 
         # Link a child
-        child_id = self.request.data.getlist('children')
-        if child_id:
-            child = Family_Member.objects.get(id=child_id)
-            instance.children.add(child)
+        if child_ids:
+            children = Member.objects.filter(id__in=children_ids)
+            instance.children.set(children)
 
 
 class UpdateDeleteMemberView(generics.RetrieveUpdateDestroyAPIView):
