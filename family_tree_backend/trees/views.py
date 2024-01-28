@@ -26,7 +26,7 @@ class CreateMemberView(generics.CreateAPIView):
             instance.save()
 
         # Link a child
-        child_id = self.request.data.get('children')
+        child_id = self.request.data.getlist('children')
         if child_id:
             child = Family_Member.objects.get(id=child_id)
             instance.children.add(child)

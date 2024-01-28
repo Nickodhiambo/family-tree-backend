@@ -15,7 +15,7 @@ class Family_Member(models.Model):
     name = models.CharField(max_length=255, null=True)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, null=True)
     parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL)
-    children = models.ManyToManyField('self', null=True, blank=True, related_name='parents', symmetrical=False)
+    children = models.ManyToManyField('self', null=True, blank=True, related_name='parents', symmetrical=True)
 
     def get_chain(self):
         """Create a parent chain"""
@@ -27,3 +27,7 @@ class Family_Member(models.Model):
             chain.append(current_member.parent)
             current_member = current_member.parent
         return chain
+
+    def get_children_chain(self):
+        """Gets the children chain of the current family member"""
+        return Family_Member.objects.filter(parent=self)
