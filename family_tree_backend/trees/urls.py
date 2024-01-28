@@ -1,38 +1,21 @@
 """Define urls for trees"""
 
 from django.urls import path
-from . import views
+from .views import CreateMemberView, UpdateDeleteMemberView, ListView, SearchMemberView
 
 app_name = 'trees'
 
 urlpatterns = [
-        # Create a member
-        path('api/create-member/', views.FamilyMemberCreateView.as_view(), name='family-member-create'),
+        # Create member
+        path('api/create_member/', CreateMemberView.as_view(), name='create-member'),
 
-        # Retrieves a list of all members
-        path('api/view-list/', views.FamilyMemberListView.as_view(), name='family-member-list'),
+        # Update/delete a member
+        path('api/update_member/<int:pk>/', UpdateDeleteMemberView.as_view(), name='update-member'),
 
-        # Retrieves a member's parents
-        path('api/view-parents/<int:pk>/', views.FamilyMemberParentsView.as_view(), name='family-member-parents'),
+        # View members' list
+        path('api/view_list/', ListView.as_view(), name='view-list'),
 
-        # Retrieves a member's children
-        path('api/view-children/<int:pk>/', views.FamilyMemberChildrenView.as_view(), name='family-member-children'),
+        # Search for a member by id
+        path('api/search_member/<int:pk>/', SearchMemberView.as_view(), name='search-member'),
+        ]
 
-        #Retrieve, update, delete a single member
-        path('api/update-delete/<int:pk>/', views.FamilyMemberUpdateDeleteView.as_view(), name='family-member-update-delete'),
-
-        # Retrieve a list of all parents
-        path('api/view-parents/', views.ParentListView.as_view(), name='parent-list-view'),
-
-        # Generate certificate
-        #path('generate/', views.generate_certificate, name='generate_certificate'),
-
-        # Display certificate
-        path('display/<int:id>/', views.certificate_display, name='certificate_display'),
-
-        # New create endpoint
-        path('api/create_family_member/', views.CreateFamilyMember.as_view(), name='create_family_member'),
-
-        # New search member endpoint
-        path('api/search_family_member/', views.SearchFamilyMember.as_view(), name='search_family_member'),
-]
