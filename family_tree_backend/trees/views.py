@@ -1,21 +1,20 @@
 from rest_framework import generics
 from rest_framework import status
 from rest_framework.response import Response
-from .serializers import Family_Member_Serializer, Ancestors_Serializer
+from .serializers import Family_Member_Serializer, Ancestors_Serializer, Base_Serializer
 from .models import Family_Member
 
 
 class CreateMemberView(generics.CreateAPIView):
     """Processes member creation action"""
     queryset = Family_Member.objects.all()
-    serializer_class = Family_Member_Serializer
+    serializer_class = Base_Serializer
 
     def perform_create(self, serializer):
         """Overrides the built-in perform create to pass a parent and member
         to a member instance
         """
         parent_id = self.request.data.get('parent')
-        child_ids = self.request.data.get('children')
 
         # Create the member
         instance = serializer.save()
@@ -26,10 +25,11 @@ class CreateMemberView(generics.CreateAPIView):
             instance.parent = parent
             instance.save()
 
-        # Link a child
-        if child_ids:
-            children = Member.objects.filter(id__in=children_ids)
-            instance.children.set(children)
+       # Link a child
+        child_id = self.request.data.get('children')
+        if child_id:
+            child = Family_Member.objects.get(id=child_id)
+            instance.children.add(child) 
 
 
 class UpdateDeleteMemberView(generics.RetrieveUpdateDestroyAPIView):
@@ -42,6 +42,13 @@ class ListView(generics.ListAPIView):
     """Retrieves a list of all members"""
     queryset = Family_Member.objects.all()
     serializer_class = Family_Member_Serializer
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer(queryset, many=True)
+
+        # Customizing the response format
+        return Response({"data": serializer.data})
 
 
 class SearchMemberView(generics.RetrieveAPIView):

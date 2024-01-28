@@ -2,22 +2,26 @@ from rest_framework import serializers
 from .models import Family_Member
 
 
-class ChildrenSerializer(serializers.ModelSerializer):
-    """Serializes id and name fields of direct children"""
+class Base_Serializer(serializers.ModelSerializer):
+    """Serializes all fields"""
 
     class Meta:
         model = Family_Member
-        fields = ['id', 'name']
+        fields = ['id', 'name', 'parent', 'children']
 
 
 class Family_Member_Serializer(serializers.ModelSerializer):
     """Serializers and deserializes family member objects"""
 
-    children = ChildrenSerializer(many=True, read_only=True)
+    children = serializers.SerializerMethodField()
 
     class Meta:
         model = Family_Member
-        fields = ['id', 'name', 'gender', 'parent', 'children']
+        fields = ['id', 'name', 'parent', 'children']
+
+    def get_children(self, instance):
+        children_data = Family_Member.objects.filter(parent=instance).values('id', 'name')
+        return children_data
 
 
 class Ancestors_Serializer(serializers.Serializer):
@@ -26,4 +30,4 @@ class Ancestors_Serializer(serializers.Serializer):
 
     def to_representation(self, instance):
         """Returns a list of ancestors to a member"""
-        return {'chain': Family_Member_Serializer(instance.get_chain(), many=True).data}
+        return {'parent_chain': Family_Member_Serializer(instance.get_chain(), many=True).data}
