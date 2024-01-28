@@ -24,10 +24,15 @@ class Family_Member_Serializer(serializers.ModelSerializer):
         return children_data
 
 
-class Ancestors_Serializer(serializers.Serializer):
+class Ancestors_Meta(serializers.ModelSerializer):
+    class Meta:
+        model = Family_Member
+        fields = ['id', 'name']
+
+
+class Ancestors_Serializer(serializers.ModelSerializer):
     """Serializes family chain"""
-    chain = Family_Member_Serializer(many=True)
 
     def to_representation(self, instance):
         """Returns a list of ancestors to a member"""
-        return {'parent_chain': Family_Member_Serializer(instance.get_chain(), many=True).data}
+        return {'parents_chain': Ancestors_Meta(instance.get_chain(), many=True).data}

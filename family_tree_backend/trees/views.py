@@ -35,7 +35,7 @@ class CreateMemberView(generics.CreateAPIView):
 class UpdateDeleteMemberView(generics.RetrieveUpdateDestroyAPIView):
     """Retrieves, and Updates or Destroys a Member"""
     queryset = Family_Member.objects.all()
-    serializer_class = Family_Member_Serializer
+    serializer_class = Base_Serializer
 
 
 class ListView(generics.ListAPIView):
