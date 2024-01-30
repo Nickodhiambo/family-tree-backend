@@ -4,14 +4,14 @@ from .models import Family_Member
 
 class FamilyMemberSerializer(serializers.ModelSerializer):
     """Serializes and deserializers family member data"""
-    parent = serializers.SerializerMethodField()
+    children = serializers.SerializerMethodField()
 
     class Meta:
         model = Family_Member
-        fields = ['id', 'name', 'parent']
+        fields = ['id', 'name', 'children']
 
-    def get_parent(self, obj):
-        family_tree = obj.get_family_tree()
+    def get_children(self, obj):
+        family_tree = obj.get_children_chain()
         
 	# Manually serialize each member in the family tree
         serialized_family_tree = []
@@ -24,30 +24,32 @@ class FamilyMemberSerializer(serializers.ModelSerializer):
         return serialized_family_tree
 
 
-class ImmediateChildrenSerializer(serializers.ModelSerializer):
+class NewSerializer(serializers.ModelSerializer):
+    children = serializers.ListField(write_only=True, required=False)
+
+    class Meta:
+        model = Family_Member
+        fields = ['id', 'name', 'children']
+
+    def to_internal_value(self, data):
+        # Convert the comma-separated string of children into a list
+        if 'children' in data and isinstance(data['children'], str):
+            data['children'] = [child.strip() for child in data['children'].split(',')]
+            return super().to_internal_value(data)
+    def get_children(self, obj):
+        # Retrieve and serialize information about the entire lineage of children
+        children = obj.get_children_chain()
+        return NewSerializer(children, many=True).data
+
+
+class ImmediateParentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Family_Member
         fields = ['id', 'name']
-class ParentListSerializer(serializers.ModelSerializer):
-    """Serializes the parent list API"""
-    parent = ImmediateChildrenSerializer(read_only=True)
-    children = ImmediateChildrenSerializer(many=True, read_only=True)
-    class Meta:
-        model = Family_Member
-        fields = ['id', 'name', 'parent', 'children']
-class NewSerializer(serializers.ModelSerializer):
-    parents = serializers.ListField(write_only=True, required=False)
 
+
+class ParentListSerializer(serializers.ModelSerializer):
+    parents = ImmediateParentSerializer(many=True, read_only=True)
     class Meta:
         model = Family_Member
         fields = ['id', 'name', 'parents']
-
-    def to_internal_value(self, data):
-        # Convert the comma-separated string of parents into a list
-        if 'parents' in data and isinstance(data['parents'], str):
-            data['parents'] = [parent.strip() for parent in data['parents'].split(',')]
-            return super().to_internal_value(data)
-    def get_parents(self, obj):
-        # Retrieve and serialize information about the entire lineage of parents
-        parents = obj.get_family_tree()
-        return NewSerializer(parents, many=True).data

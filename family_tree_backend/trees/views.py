@@ -29,16 +29,16 @@ class CreateFamilyMember(APIView):
     def post(self, request, format=None):
         serializer = NewSerializer(data=request.data)
         if serializer.is_valid():
-            # Extract parents from the data
-            parents_data = serializer.validated_data.pop('parents', [])
+            # Extract children from the data
+            children_data = serializer.validated_data.pop('children', [])
             # Create the member
             member = serializer.save()
             # Create parent-child relationships
-            for parent_name in (parents_data):
-                parent = Family_Member.objects.create(name=parent_name)
-                member.parent = parent
+            for child_name in (children_data):
+                child = Family_Member.objects.create(name=child_name)
+                member.child = child
                 member.save()
-                member = parent  # Move to the next level in the hierarchy
+                member = child  # Move to the next level in the hierarchy
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -50,9 +50,13 @@ class SearchFamilyMember(APIView):
         if member_id is not None:
             try:
                 member = Family_Member.objects.get(id=member_id)
-                family_tree = member.get_family_tree()
-                serializer = NewSerializer(family_tree, many=True)
-                return Response(serializer.data)
+                if member.parents.count() > 0:
+                    parents_serializer = ParentListSerializer(member.parents.all(), many=True)
+                    return Response(parents_serializer.data)
+                else:
+                    return Response({
+                        "parents": None
+                        })
             except Family_Member.DoesNotExist:
                 return Response({'error': 'Family member not found.'}, status=status.HTTP_404_NOT_FOUND)
         return Response({'error': 'Member name is required.'}, status=status.HTTP_400_BAD_REQUEST)

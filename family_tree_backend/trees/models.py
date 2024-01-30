@@ -5,26 +5,24 @@ from django.db import models
 class Family_Member(models.Model):
     """An Individual family member"""
     name = models.CharField(max_length=100, null=True)
-    parent = models.ForeignKey(
+    child = models.ForeignKey(
             'self',
             on_delete = models.SET_NULL,
             null = True,
             blank = True,
-            related_name = 'children'
+            related_name = 'parents'
         )
 
-    certificate_image = models.ImageField(upload_to='certificates/', blank=True, null=True)
-    #data_coordinates = models.CharField(max_length=50, blank=True, null=True)
     
     def __str__(self):
-        return (f"{self.first_name}")
+        return (f"{self.name}")
 
-    def get_family_tree(self):
-        """Gets the parent tree of the current member"""
-        family_tree = [self]
-        parent = self.parent
+    def get_children_chain(self):
+        """Gets the children tree of the current member"""
+        family_tree = []
+        child = self.child
 
-        while parent:
-            family_tree.insert(0, parent) # Append instead of insert
-            parent = parent.parent
-        return family_tree
+        while child:
+            family_tree.insert(0, child) # Append instead of insert
+            child = child.child
+        return reversed(family_tree)
