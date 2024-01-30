@@ -4,26 +4,27 @@ from django.db import models
 
 class Family_Member(models.Model):
     """An Individual family member"""
-    MALE = 'M'
-    FEMALE = 'F'
-    GENDER_CHOICES = [
-            (MALE, 'Male'),
-            (FEMALE, 'Female')
-            ]
+    name = models.CharField(max_length=100, null=True)
+    parent = models.ForeignKey(
+            'self',
+            on_delete = models.SET_NULL,
+            null = True,
+            blank = True,
+            related_name = 'children'
+        )
 
-    id = models.IntegerField(primary_key=True)
-    name = models.CharField(max_length=255, null=True)
-    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, null=True)
-    parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL)
-    children = models.ManyToManyField('self', null=True, blank=True, related_name='parents', symmetrical=False)
+    certificate_image = models.ImageField(upload_to='certificates/', blank=True, null=True)
+    #data_coordinates = models.CharField(max_length=50, blank=True, null=True)
+    
+    def __str__(self):
+        return (f"{self.first_name}")
 
-    def get_chain(self):
-        """Create a parent chain"""
-        chain = []
-        current_member = self
-        chain.append(current_member)
+    def get_family_tree(self):
+        """Gets the parent tree of the current member"""
+        family_tree = [self]
+        parent = self.parent
 
-        while current_member.parent:
-            chain.append(current_member.parent)
-            current_member = current_member.parent
-        return list(reversed(chain)) 
+        while parent:
+            family_tree.insert(0, parent) # Append instead of insert
+            parent = parent.parent
+        return family_tree
