@@ -50,6 +50,12 @@ class ImmediateParentSerializer(serializers.ModelSerializer):
 
 class ParentListSerializer(serializers.ModelSerializer):
     parents = ImmediateParentSerializer(many=True, read_only=True)
+
     class Meta:
         model = Family_Member
         fields = ['id', 'name', 'parents']
+
+    def get_parents(self):
+        chain = []
+        parent = self.parents
+
