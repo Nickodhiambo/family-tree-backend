@@ -4,7 +4,7 @@ from django.db import models
 
 class Family_Member(models.Model):
     """An Individual family member"""
-    parent = models.CharField(max_length=100, null=True)
+    name = models.CharField(max_length=100, null=True)
     child = models.ForeignKey(
             'self',
             on_delete = models.SET_NULL,
