@@ -28,13 +28,14 @@ class Family_Member(models.Model):
         return reversed(family_tree)
 
 
-    """def get_parents_chain(self):
-        Gets the parents tree of the current member
+    def get_parents_chain(self, obj):
+        """Gets the parents tree of the current member"""
+        obj = self
         family_tree = [self]
-        parent = self.parents.first()  # Assuming a member can have multiple parents
+        parent = obj.parents.first()  # Assuming a member can have multiple parents
 
         while parent:
             family_tree.insert(0, parent)
             parent = parent.parents.first()
 
-        return reversed(family_tree)"""
+        return reversed(family_tree)
