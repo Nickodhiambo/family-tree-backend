@@ -24,7 +24,7 @@ class FamilyMemberSerializer(serializers.ModelSerializer):
         return serialized_family_tree
 
 
-class NewSerializer(serializers.ModelSerializer):
+class CreateMemberSerializer(serializers.ModelSerializer):
     children = serializers.ListField(write_only=True, required=False)
 
     class Meta:
@@ -42,11 +42,10 @@ class NewSerializer(serializers.ModelSerializer):
         return NewSerializer(children, many=True).data
 
 
-class ImmediateParentSerializer(serializers.ModelSerializer):
+class ParentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Family_Member
         fields = ['id', 'name']
-
 
 class ParentListSerializer(serializers.ModelSerializer):
     #parents = ImmediateParentSerializer(many=True, read_only=True)
@@ -54,7 +53,7 @@ class ParentListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Family_Member
-        fields = ['parents']
+        fields = ['id', 'name']
 
     def get_parents(self, obj):
         family_tree = obj.get_parents_chain(obj)
