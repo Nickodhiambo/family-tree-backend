@@ -15,7 +15,23 @@ class FamilyMemberListView(generics.ListAPIView):
 class FamilyMemberUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
     """Retrieves updates and delets a member"""
     queryset = Family_Member.objects.all()
-    serializer_class = FamilyMemberSerializer
+    serializer_class = CreateMemberSerializer
+
+    def put(self, request, pk, format=None):
+        member = Family_Member.objects.get(pk=pk)
+        serializer = CreateMemberSerializer(member, data=request.data)
+        if serializer.is_valid():
+            # Extract children from the data
+            children_data = serializer.validated_data.pop('children', [])
+            # Create the member
+            member = serializer.save()
+            # Create parent-child relationships
+            for child_name in (children_data):
+                child = Family_Member.objects.create(name=child_name)
+                member.child = child
+                member.save()
+                member = child  # Move to the next level in the hierarchy
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class CreateFamilyMember(APIView):
