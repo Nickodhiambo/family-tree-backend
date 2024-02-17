@@ -2,6 +2,8 @@ from rest_framework.views import APIView
 from rest_framework import generics
 from rest_framework import status
 from rest_framework.response import Response
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 from .serializers import FamilyMemberSerializer, CreateMemberSerializer, ParentSerializer
 from .models import Family_Member
 
@@ -31,7 +33,8 @@ class FamilyMemberUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
                 member.child = child
                 member.save()
                 member = child  # Move to the next level in the hierarchy
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            response = HttpResponseRedirect(reverse('trees:family-member-single', kwargs={'pk': pk}))
+            return response
 
 
 class CreateFamilyMember(APIView):
@@ -64,3 +67,8 @@ class SearchFamilyMember(APIView):
         serializer = ParentSerializer(parents_chain, many=True)
 
         return Response(serializer.data)
+
+class FamilyMemberSingleView(generics.RetrieveUpdateAPIView):
+    """Retrieves a single member"""
+    queryset = Family_Member.objects.all()
+    serializer_class = FamilyMemberSerializer

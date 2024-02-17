@@ -16,6 +16,9 @@ urlpatterns = [
         path('api/create_family_member/', views.CreateFamilyMember.as_view(), name='create_family_member'),
 
         # New search member endpoint
-        path('api/search_family_member/<int:member_id>/', views.SearchFamilyMember.as_view(), name='search_family_member')
+        path('api/search_family_member/<int:member_id>/', views.SearchFamilyMember.as_view(), name='search_family_member'),
+
+        #Retrieves a single member
+        path('api/view-single/<int:pk>/', views.FamilyMemberSingleView.as_view(), name='family-member-single'),
         ]
 

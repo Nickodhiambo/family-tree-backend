@@ -24,6 +24,7 @@ class FamilyMemberSerializer(serializers.ModelSerializer):
         return serialized_family_tree
 
 
+
 class CreateMemberSerializer(serializers.ModelSerializer):
     children = serializers.ListField(write_only=True, required=False)
 
